@@ -21,7 +21,7 @@ class laveqed():
                          '\\end{document}'
         self.name=name.replace('.svg','')
         self.scale=scale
-        if type(cleanAfter)==type(''):
+        if isinstance(cleanAfter, str):
             self.cleanAfter=bool(int(cleanAfter))
         else:
             self.cleanAfter=bool(cleanAfter)
