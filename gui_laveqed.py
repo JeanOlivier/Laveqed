@@ -296,8 +296,8 @@ class laveqed_gui(object):
             text.tag_remove(i,'1.0','end')
         # Parsing the text and setting tags
         self.highlight_pattern(text,r'\\\\|\^|([-\.]?|^)[0-9]\.?(pt| pt)?|\\%','red',regexp=True)       
-        self.highlight_pattern(text,r'[\[\]\{\}]', 'purple',regexp=True)           
-        self.highlight_pattern(text,r'\\([a-zA-Z\(\)]+|[!#&\$,;:])', 'green',regexp=True)
+        self.highlight_pattern(text,r'[\[\]\{\}\(\)]', 'purple',regexp=True)           
+        self.highlight_pattern(text,r'\\([a-zA-Z]+|[!#&\$,;:])', 'green',regexp=True)
         self.highlight_pattern(text,r'([^\\]|^)%.*','blue',regexp=True)
         self.highlight_pattern(text,r'&','bold',regexp=True)
         
