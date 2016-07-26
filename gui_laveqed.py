@@ -225,7 +225,7 @@ class laveqed_gui(object):
                 font=(FONTNAME,12), undo=True)
         scale_label = Label(pref, text='Scale:')
         scale_entry = Entry(pref, width = 2)
-        save_button = Button(pref, text='Apply')
+        save_button = Button(pref, text='OK')
         
         padval=10
         pre_label.grid(row=0, column=0, sticky='w', padx=padval,\
@@ -262,6 +262,17 @@ class laveqed_gui(object):
         post_text.bind('<KeyRelease>', set_syntax_pref)
         set_syntax_pref()
 
+        def save_pref(event=None):
+            self.preamble = os.linesep.join([s for s \
+                    in pre_text.get('1.0', END).splitlines() if s.strip()])
+            self.postamble = os.linesep.join([s for s \
+                    in post_text.get('1.0', END).splitlines() if s.strip()])
+            self.scale = scale_entry.get()
+            pref.destroy()
+
+        save_button.bind('<ButtonRelease-1>', save_pref)
+
+
         
 
     def preferences(self,event=None): 
@@ -273,6 +284,8 @@ class laveqed_gui(object):
         
         # Create the Widgets
         self.build_preferences(pref, event)
+
+
 
 
 
