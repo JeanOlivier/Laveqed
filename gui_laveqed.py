@@ -227,10 +227,13 @@ class laveqed_gui(object):
                 pady=(0,padval))
 
         pref.columnconfigure(0, weight=1)
-        pref.rowconfigure(2, weight=1)
-        pref.rowconfigure(4, weight=1)
+        pref.rowconfigure(2, weight=4)
+        pref.rowconfigure(4, weight=5)
 
         
+        pre_text.insert('1.0', self.preamble)
+        post_text.insert('1.0', self.postamble)
+        scale_entry.insert(0, self.scale)
  
 
     def preferences(self,event=None): 
@@ -240,7 +243,7 @@ class laveqed_gui(object):
         pref.title('Preferences')
         self.center(pref, x=APP_WIN_WIDTH/2, y=APP_WIN_HEIGHT)
         
-        # Create the frames/Widgets
+        # Create the Widgets
         self.build_preferences(pref, event)
 
 
