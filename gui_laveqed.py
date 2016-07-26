@@ -152,10 +152,10 @@ class laveqed_gui(object):
         self._binding()
 
 
-    def center(self,win):
+    def center(self, win, x=APP_WIN_WIDTH, y=APP_WIN_HEIGHT):
         win.update_idletasks()
-        width = APP_WIN_WIDTH
-        height = APP_WIN_HEIGHT
+        width = x
+        height = y
         x = (win.winfo_screenwidth() // 2) - (width // 2)
         y = (win.winfo_screenheight() // 2) - (height // 2)
         win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
@@ -197,9 +197,55 @@ class laveqed_gui(object):
     def run(self):
         self.win.mainloop()
 
+
+
+    def build_preferences(self, pref, event=None):
+        pre_label = Label(pref, text='Preamble:')
+        post_label = Label(pref, text='Postamble:')
+        pre_text = Text(pref, bd=2,padx=4, pady=4, wrap=WORD,\
+                font=(FONTNAME,12), undo=True)
+        post_text = Text(pref, bd=2,padx=4, pady=4, wrap=WORD,\
+                font=(FONTNAME,12), undo=True)
+        scale_label = Label(pref, text='Scale:')
+        scale_entry = Entry(pref, width = 2)
+        save_button = Button(pref, text='Save')
+        
+        padval=10
+        pre_label.grid(row=0, column=0, sticky='w', padx=padval,\
+                pady=(padval,0))
+        pre_text.grid(row=2, column=0, sticky='nwse', padx=padval,\
+                pady=(0,padval))
+        post_label.grid(row=3, column=0, sticky='w', padx=padval,\
+                pady=(padval,0))
+        post_text.grid(row=4, column=0, sticky='nwse', padx=padval,\
+                pady=(0,padval))
+        scale_label.grid(row=5, column=0, sticky='w', padx=padval,\
+                pady=(0,padval))
+        scale_entry.grid(row=5, column=0, sticky='w', padx=50,\
+                pady=(0,padval))
+        save_button.grid(row=5, column=0, sticky='e', padx=padval,\
+                pady=(0,padval))
+
+        pref.columnconfigure(0, weight=1)
+        pref.rowconfigure(2, weight=1)
+        pref.rowconfigure(4, weight=1)
+
+        
+ 
+
     def preferences(self,event=None): 
         print('Editing Preferences\t:\tOpening Dialog')
-        # TODO
+        # Create the window
+        pref = Toplevel(self.win)
+        pref.title('Preferences')
+        self.center(pref, x=APP_WIN_WIDTH/2, y=APP_WIN_HEIGHT)
+        
+        # Create the frames/Widgets
+        self.build_preferences(pref, event)
+
+
+
+                
 
 
     def build_svg_fixCtrlReturn(self,event=None):
