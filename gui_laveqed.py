@@ -58,21 +58,38 @@ class laveqed_gui(object):
         self.text_frame=LabelFrame(self.bottom_frame,relief=FLAT)
         self.text_frame.pack(side='left', fill=X, expand=True, padx=4, pady=4)
 
+    def _tag_configure(self, text):
+        # Color tags for syntax highlight
+        text.tag_configure('red',foreground='red')
+        text.tag_configure('green',foreground='green')
+        text.tag_configure('purple',foreground='purple')
+        text.tag_configure('blue',foreground='blue')
+        # Bold baby!
+        text.tag_configure('bold',font=self.bold_font)
+
+
     def _buildWidgets(self):
         self.text_widget=Text(self.text_frame,bd=2,padx=4,pady=4,\
                 wrap=WORD,font=(FONTNAME,14),undo=True)
         self.text_widget.pack(fill='both',expand=True,padx=4,pady=4)
-        # Color tags for syntax highlight
-        self.text_widget.tag_configure('red',foreground='red')
-        self.text_widget.tag_configure('green',foreground='green')
-        self.text_widget.tag_configure('purple',foreground='purple')
-        self.text_widget.tag_configure('blue',foreground='blue')
-        # Bold baby!
-        #self.orig_font = tkFont.Font(self.text_widget, self.text_widget.cget("font"))
         self.bold_font = tkFont.Font(self.text_widget, self.text_widget.cget("font"))
         self.bold_font.configure(weight="bold")
-        self.text_widget.tag_configure('bold',font=self.bold_font)
-        #self.text_widget.tag_configure('plain',font=self.orig_font,foreground='black',background='white')
+        self._tag_configure(self.text_widget)
+
+#        self.text_widget=Text(self.text_frame,bd=2,padx=4,pady=4,\
+#                wrap=WORD,font=(FONTNAME,14),undo=True)
+#        self.text_widget.pack(fill='both',expand=True,padx=4,pady=4)
+#        # Color tags for syntax highlight
+#        self.text_widget.tag_configure('red',foreground='red')
+#        self.text_widget.tag_configure('green',foreground='green')
+#        self.text_widget.tag_configure('purple',foreground='purple')
+#        self.text_widget.tag_configure('blue',foreground='blue')
+#        # Bold baby!
+#        #self.orig_font = tkFont.Font(self.text_widget, self.text_widget.cget("font"))
+#        self.bold_font = tkFont.Font(self.text_widget, self.text_widget.cget("font"))
+#        self.bold_font.configure(weight="bold")
+#        self.text_widget.tag_configure('bold',font=self.bold_font)
+#        #self.text_widget.tag_configure('plain',font=self.orig_font,foreground='black',background='white')
 
 
 
@@ -208,7 +225,7 @@ class laveqed_gui(object):
                 font=(FONTNAME,12), undo=True)
         scale_label = Label(pref, text='Scale:')
         scale_entry = Entry(pref, width = 2)
-        save_button = Button(pref, text='Save')
+        save_button = Button(pref, text='Apply')
         
         padval=10
         pre_label.grid(row=0, column=0, sticky='w', padx=padval,\
@@ -230,11 +247,22 @@ class laveqed_gui(object):
         pref.rowconfigure(2, weight=4)
         pref.rowconfigure(4, weight=5)
 
-        
         pre_text.insert('1.0', self.preamble)
         post_text.insert('1.0', self.postamble)
         scale_entry.insert(0, self.scale)
- 
+
+        self._tag_configure(pre_text)
+        self._tag_configure(post_text)
+
+        def set_syntax_pref(event=None):
+            self._set_syntax(pre_text)
+            self._set_syntax(post_text)
+        
+        pre_text.bind('<KeyRelease>', set_syntax_pref)
+        post_text.bind('<KeyRelease>', set_syntax_pref)
+        set_syntax_pref()
+
+        
 
     def preferences(self,event=None): 
         print('Editing Preferences\t:\tOpening Dialog')
@@ -333,13 +361,13 @@ class laveqed_gui(object):
             event.mark_set("matchEnd", "%s+%sc" % (index,count.get()))
             event.tag_add(tag, "matchStart","matchEnd")
 
-    def set_syntax(self,event=None):
+    def _set_syntax(self, text):
         # \\ ^ & and numbers including reals and size in "pt" -> red
         # {}[] -> purple
         # \alpha or (\!\#\&\$\,\;\:) -> green
         # % until EOL is comment (blue)
         # Alignment '&' is bold
-        text=self.text_widget
+
         # First clearing all tags. e.g. avoids '{}<left>A' to color '{A}' all in purple
         for i in ['red','purple','green','blue','bold']:
             text.tag_remove(i,'1.0','end')
@@ -349,6 +377,26 @@ class laveqed_gui(object):
         self.highlight_pattern(text,r'\\([a-zA-Z]+|[!#&\$,;:])', 'green',regexp=True)
         self.highlight_pattern(text,r'([^\\]|^)%.*','blue',regexp=True)
         self.highlight_pattern(text,r'&','bold',regexp=True)
+
+    def set_syntax(self, event=None):
+        self._set_syntax(self.text_widget)
+
+
+#        # \\ ^ & and numbers including reals and size in "pt" -> red
+#        # {}[] -> purple
+#        # \alpha or (\!\#\&\$\,\;\:) -> green
+#        # % until EOL is comment (blue)
+#        # Alignment '&' is bold
+#        text=self.text_widget
+#        # First clearing all tags. e.g. avoids '{}<left>A' to color '{A}' all in purple
+#        for i in ['red','purple','green','blue','bold']:
+#            text.tag_remove(i,'1.0','end')
+#        # Parsing the text and setting tags
+#        self.highlight_pattern(text,r'\\\\|\^|([-\.]?|^)[0-9]\.?(pt| pt)?|\\%','red',regexp=True)       
+#        self.highlight_pattern(text,r'[\[\]\{\}\(\)]', 'purple',regexp=True)           
+#        self.highlight_pattern(text,r'\\([a-zA-Z]+|[!#&\$,;:])', 'green',regexp=True)
+#        self.highlight_pattern(text,r'([^\\]|^)%.*','blue',regexp=True)
+#        self.highlight_pattern(text,r'&','bold',regexp=True)
         
 
         
