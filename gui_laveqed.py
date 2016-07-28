@@ -30,6 +30,7 @@ class laveqed_gui(object):
         self.center(self.win)
         self.win.protocol("WM_DELETE_WINDOW", self.close)
         self.previewSize=(713,45)
+        self._prefIsOpened = False
 
         self.buildGUI()
         self._set_vars() # Sets variables for use by laveqed, also creates temp folder and cd into it
@@ -141,7 +142,7 @@ class laveqed_gui(object):
         self.win.bind_all('<Control-Return>',self.build_svg_fixCtrlReturn)
         self.win.bind_all('<Control-s>',self.save_svg)
         self.win.bind_all('<Control-o>',self.open_svg_fixCtrlO)
-        self.win.bind_all('<Control-p>',self.preferences)
+        self.win.bind_all('<Control-p>', self.preferences)
         self.win.bind_all('<Control-q>',self.close)
         # Text widget binds
         self.text_widget.bind('<Control-h>',self.hat)
@@ -261,6 +262,7 @@ class laveqed_gui(object):
         pre_text.bind('<KeyRelease>', set_syntax_pref)
         post_text.bind('<KeyRelease>', set_syntax_pref)
         set_syntax_pref()
+        pre_text.focus()
 
         def save_pref(event=None):
             self.preamble = os.linesep.join([s for s \
@@ -268,15 +270,29 @@ class laveqed_gui(object):
             self.postamble = os.linesep.join([s for s \
                     in post_text.get('1.0', END).splitlines() if s.strip()])
             self.scale = scale_entry.get()
-            pref.destroy()
+            print('Editing Preferences\t:\tSaving Preferences')
+            pref._destroy()
 
         save_button.bind('<ButtonRelease-1>', save_pref)
 
 
         
 
-    def preferences(self,event=None): 
-        print('Editing Preferences\t:\tOpening Dialog')
+    def preferences(self,event=None):
+        if self._prefIsOpened:
+            return
+        else:
+            print('Editing Preferences\t:\tOpening Dialog')
+            self._prefIsOpened = True
+
+        def _destroy(self_, event=None):
+            print('Editing Preferences\t:\tClosing Dialog')
+            self_.destroy()
+            self._prefIsOpened = False
+
+
+        Toplevel._destroy = _destroy
+
         # Create the window
         pref = Toplevel(self.win)
         pref.title('Preferences')
@@ -284,6 +300,14 @@ class laveqed_gui(object):
         
         # Create the Widgets
         self.build_preferences(pref, event)
+        
+        # Closes with a message
+        pref.protocol("WM_DELETE_WINDOW", pref._destroy)
+
+        # Pref dialog always on top and to focus
+        pref.grab_set()
+        pref.wm_attributes("-topmost", 1)
+
 
 
 
