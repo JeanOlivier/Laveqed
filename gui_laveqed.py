@@ -30,7 +30,7 @@ class laveqed_gui(object):
         self.center(self.win)
         self.win.protocol("WM_DELETE_WINDOW", self.close)
         self.previewSize=(713,45)
-        self._prefIsOpened = False
+        self._topLevelOpened = False
 
         self.buildGUI()
         self._set_vars() # Sets variables for use by laveqed, also creates temp folder and cd into it
@@ -139,11 +139,11 @@ class laveqed_gui(object):
         # Allows select all in Text Widget
         self.win.bind_class("Text","<Control-a>", self.selectall)
         # Global binds
-        self.win.bind_all('<Control-Return>',self.build_svg_fixCtrlReturn)
-        self.win.bind_all('<Control-s>',self.save_svg)
-        self.win.bind_all('<Control-o>',self.open_svg_fixCtrlO)
-        self.win.bind_all('<Control-p>', self.preferences)
-        self.win.bind_all('<Control-q>',self.close)
+        self.win.bind('<Control-Return>',self.build_svg_fixCtrlReturn)
+        self.win.bind('<Control-s>',self.save_svg)
+        self.win.bind('<Control-o>',self.open_svg_fixCtrlO)
+        self.win.bind('<Control-p>', self.preferences)
+        self.win.bind('<Control-q>',self.close)
         # Text widget binds
         self.text_widget.bind('<Control-h>',self.hat)
         self.text_widget.bind('<KeyRelease>',self.set_syntax)
@@ -274,22 +274,22 @@ class laveqed_gui(object):
             pref._destroy()
 
         save_button.bind('<ButtonRelease-1>', save_pref)
-
-
+        save_button.bind('<Return>', save_pref)
+        pref.bind('<Control-s>', save_pref)
+        pref.bind('<Control-q>', pref._destroy)
         
 
     def preferences(self,event=None):
-        if self._prefIsOpened:
+        if self._topLevelOpened:
             return
         else:
             print('Editing Preferences\t:\tOpening Dialog')
-            self._prefIsOpened = True
+            self._topLevelOpened = True
 
         def _destroy(self_, event=None):
             print('Editing Preferences\t:\tClosing Dialog')
             self_.destroy()
-            self._prefIsOpened = False
-
+            self._topLevelOpened = False
 
         Toplevel._destroy = _destroy
 
@@ -307,13 +307,6 @@ class laveqed_gui(object):
         # Pref dialog always on top and to focus
         pref.grab_set()
         pref.wm_attributes("-topmost", 1)
-
-
-
-
-
-
-                
 
 
     def build_svg_fixCtrlReturn(self,event=None):
