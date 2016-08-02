@@ -495,8 +495,9 @@ class laveqed_gui(object):
 
     def ZoomOutSVG(self, event=None):
         # Avoid problems with too small image
-        if self.displayScale > 0.025:
-            self.displayScale /= 1.05
+        self.displayScale /= 1.05
+        if self.displayScale < 0.05:
+            self.displayScale = 0.05
         self.updateOpenedSVG()
 
     def ZoomResetSVG(self, event=None):
