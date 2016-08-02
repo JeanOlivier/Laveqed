@@ -430,13 +430,14 @@ class laveqed_gui(object):
         
 
         
-    def svgPhotoImage(self,file_path_name): # TODO Fix (if can be) AA artefacts at sharp alpha edges
+    def svgPhotoImage(self,file_path_name, scale=1): # TODO Fix (if can be) AA artefacts at sharp alpha edges
         "Returns a ImageTk.PhotoImage object represeting the svg file" 
         # Based on pygame.org/wiki/CairoPygame and http://bit.ly/1hnpYZY        
         svg = rsvg.Handle(file=file_path_name)
         width, height = svg.get_dimension_data()[:2]
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(width), int(height))
         context = cairo.Context(surface)
+        context.scale(scale,scale)
         #context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
         svg.render_cairo(context)
         tk_image=ImageTk.PhotoImage('RGBA')
