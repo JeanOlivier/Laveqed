@@ -31,6 +31,7 @@ class laveqed_gui(object):
         self.win.protocol("WM_DELETE_WINDOW", self.close)
         self.previewSize=(713,45)
         self._topLevelOpened = False
+        self.displayScale = 1
 
         self.buildGUI()
         self._set_vars() # Sets variables for use by laveqed, also creates temp folder and cd into it
@@ -138,7 +139,7 @@ class laveqed_gui(object):
     def _binding(self):
         # Allows select all in Text Widget
         self.win.bind_class("Text","<Control-a>", self.selectall)
-        # Global binds
+        # Main window binds
         self.win.bind('<Control-Return>',self.build_svg_fixCtrlReturn)
         self.win.bind('<Control-s>',self.save_svg)
         self.win.bind('<Control-o>',self.open_svg_fixCtrlO)
@@ -147,6 +148,10 @@ class laveqed_gui(object):
         # Text widget binds
         self.text_widget.bind('<Control-h>',self.hat)
         self.text_widget.bind('<KeyRelease>',self.set_syntax)
+        # SVG binds
+        self.win.bind('<Control-plus>', self.ZoomInSVG)
+        self.win.bind('<Control-minus>', self.ZoomOutSVG)
+        self.win.bind('<Control-0>', self.ZoomResetSVG)
 
 
     def _makelogo(self):
@@ -182,7 +187,9 @@ class laveqed_gui(object):
     def load_svg(self,event=None):
         filename=self.name+'.svg'
         if os.path.isfile(filename):
-            self.tk_image=self.svgPhotoImage(filename)
+            #self.tk_image=self.svgPhotoImage(filename, scale=self.displayScale)
+            self.openDisplaySVG(filename)
+
             print('Loading svg file\t:\t'+filename+' (Success!)')
         # If opening failed, put a blank image the same size as SVGLOGOFILE
         else:   # Note, this should never occurs now... Left here because
@@ -445,6 +452,56 @@ class laveqed_gui(object):
         tk_image.paste(image)
         return(tk_image)
 
+
+
+    def openSVG(self, file_path_name):
+        svg = rsvg.Handle(file=file_path_name)
+        width, height = svg.get_dimension_data()[:2]
+        self.openedSVG = dict(svg=svg, width=width, height=height)
+
+
+    def updateOpenedSVG(self):
+        svg = self.openedSVG['svg']
+        width = self.openedSVG['width']
+        height = self.openedSVG['height']
+
+        scale = self.displayScale
+
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(width*scale), int(height*scale))
+        context = cairo.Context(surface)
+        context.scale(scale,scale)
+        #context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
+        svg.render_cairo(context)
+        tk_image=ImageTk.PhotoImage('RGBA')
+        image=Image.frombuffer('RGBA',(int(width*scale),int(height*scale)),surface.get_data(),'raw','BGRA',0,1)
+        tk_image.paste(image)
+
+        self.tk_image = tk_image
+        self.tk_image.paste(image)
+        self.png_frame.config(image=self.tk_image)
+
+    
+    def openDisplaySVG(self, file_path_name):
+        self.openSVG(file_path_name)
+        self.updateOpenedSVG()
+
+
+    def ZoomInSVG(self, event=None):
+        self.displayScale *= 1.05
+        # Avoids slugginess caused by zooming too much by accident
+        if self.displayScale > 5:
+            self.displayScale = 5
+        self.updateOpenedSVG()
+
+    def ZoomOutSVG(self, event=None):
+        # Avoid problems with too small image
+        if self.displayScale > 0.025:
+            self.displayScale /= 1.05
+        self.updateOpenedSVG()
+
+    def ZoomResetSVG(self, event=None):
+        self.displayScale = 1
+        self.updateOpenedSVG()
 
 
 if __name__ == '__main__':
