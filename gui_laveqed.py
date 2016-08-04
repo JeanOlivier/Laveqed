@@ -470,7 +470,7 @@ class laveqed_gui(object):
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(width*scale), int(height*scale))
         context = cairo.Context(surface)
         context.scale(scale,scale)
-        #context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
+        context.set_antialias(cairo.ANTIALIAS_DEFAULT)
         svg.render_cairo(context)
         tk_image=ImageTk.PhotoImage('RGBA')
         image=Image.frombuffer('RGBA',(int(width*scale),int(height*scale)),surface.get_data(),'raw','BGRA',0,1)
@@ -487,11 +487,10 @@ class laveqed_gui(object):
 
 
     def ZoomInSVG(self, event=None):
-        self.displayScale *= 1.05
         # Avoids slugginess caused by zooming too much by accident
-        if self.displayScale > 5:
-            self.displayScale = 5
-        self.updateOpenedSVG()
+        if self.displayScale < 5:
+            self.displayScale *= 1.05
+            self.updateOpenedSVG()
 
     def ZoomOutSVG(self, event=None):
         # Avoid problems with too small image
