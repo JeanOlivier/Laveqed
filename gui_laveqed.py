@@ -166,9 +166,10 @@ class laveqed_gui(object):
 
 
     def buildGUI(self):
+        # Style
+        #self.win.style=Style()
+        #self.win.style.theme_use('clam')
         #Order matters for some elements; e.g. better build frames before widgets
-            #self.style=Style()
-            #self.style.theme_use('clam')
         self._buildFrames()
         self._buildWidgets()
         self._buildMenus()

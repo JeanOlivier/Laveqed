@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=LaVeqEd
+Comment=Python GUI for LaTeX Vetorial Equation Editor
+GenericName=Equation Editor
+Exec=python /home/jos/Dropbox/github/laveqed/gui_laveqed.py
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=/home/jos/Dropbox/github/laveqed/laveqed_logo_compact.svg
+Categories=Utility;
+StartupNotify=true
+X-Desktop-File-Install-Version=0.22
