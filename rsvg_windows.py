@@ -43,8 +43,8 @@ def rsvg_windows():
                 ctx.restore()
 
         class rsvgClass():
-            def Handle(self,file):
-                return rsvgHandle(file)
+            def Handle(self,path):
+                return rsvgHandle(path)
 
         rsvg = rsvgClass()
         return rsvg
